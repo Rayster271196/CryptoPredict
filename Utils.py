@@ -1,5 +1,6 @@
 import os
 import shutil
+import numpy as np
 
 
 def IfExistsMoveTo(pathToCheck, destinationPath):
@@ -21,8 +22,13 @@ def clearFilesInDirectory(pathToFolder):
         except Exception as e:
             print('Failed to delete %s. Reason: %s' % (file_path, e))
 
-def IfExistsMoveTo(pathToCheck, destinationPath=""):
-    for filename in os.listdir(pathToCheck):
-        file_path = os.path.join(pathToCheck, filename)
-        destination_path = os.path.join("../data", "ranked_format")
-        shutil.move(file_path, destination_path)
+
+def calculate_mae(predicted, actual):
+    absolute_errors = np.abs(predicted - actual)
+    mae = np.mean(absolute_errors)
+    return mae
+
+def calculate_mape(predicted, actual):
+    absolute_percentage_errors = np.abs((predicted - actual) / actual) * 100
+    mape = np.mean(absolute_percentage_errors)
+    return mape
