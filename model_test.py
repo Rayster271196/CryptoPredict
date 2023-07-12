@@ -7,7 +7,7 @@ from data_extraction import *
 DATA_LIMIT = 10
 loaded_rf = joblib.load("Testing model\model.pkl")
 
-
+# Getting data from Binance and perform data engineering
 def getTestingdata():
     depth = client.get_order_book(symbol=SYMBOL, limit=DATA_LIMIT)
     df_depth = pd.DataFrame(depth)
@@ -44,9 +44,9 @@ def getTestingdata():
                 if f"ask_volume#{i}" in value:
                     ask_volume = value
         new_final_df[f"rank#{i}"] = ((new_df[ask_volume] * new_df[bid_price]) + (new_df[bid_volume] * new_df[ask_price]))/(new_df[bid_volume] + new_df[ask_volume])
-
     return new_final_df
 
+# Hanldes the preprocess of the orderbook data
 def preprocess(test_df):
     cols = list(test_df.columns)
     features = test_df[cols]
@@ -56,10 +56,13 @@ def preprocess(test_df):
     return test_df
 
 
-
+# We fetch the orderbook data and make our prediction and yield predicted price and actual price
 def test():
     model = loaded_rf
+    # get raw orderbook data
     test_df = getTestingdata()
+
+    # preprocess data before prediction
     X_test = preprocess(test_df)
     prediction = model.predict(X_test)
     scalar = joblib.load("Testing model\\target_standard_scaler.pkl")
@@ -69,5 +72,4 @@ def test():
     time.sleep(TIME_TO_SLEEP)
 
     actual_value = get_mid_price(pd.DataFrame(client.get_order_book(symbol=SYMBOL, limit=1)))
-
     yield actual_value

@@ -8,7 +8,7 @@ from Utils import if_exists_move_to, calculate_mae, calculate_mape
 from model_test import test, clearFilesInDirectory
 from data_extraction import SYMBOL
 
-
+# Global variables
 predicted_prices_arr = np.array([])
 actual_prices_arr = np.array([])
 pred_running_error = 0
@@ -31,19 +31,26 @@ def generate_data():
     placeholder_counter = st.empty()
 
     while True:
+        # Get predicted value at t secs
         testGenerator = test()
         predicted_price = next(testGenerator)
         placeholder_predicted_value.text(f"Model Predicted Price({time.strftime('%H-%M-%S')}): {predicted_price}")
         
+        # Wait 10 secs to get actual value
         with st.spinner('Please wait for a moment...'):
             actual_price = next(testGenerator)
 
+        # Add values predicted and actual values to their respective lists
         predicted_prices_arr  = np.append(predicted_prices_arr,np.array(predicted_price))
         actual_prices_arr  = np.append(actual_prices_arr,np.array(actual_price))
+
+        # Calculate running errors
         pred_running_error = pred_running_error+abs(predicted_price-actual_price)
         if len(predicted_prices_arr)>1:
             benchmark_running_error += abs(actual_prices_arr[len(actual_prices_arr)-1] - actual_prices_arr[len(actual_prices_arr)-2])
         
+
+        # Display code here
         placeholder_actual_price.text(f"Actual Price({time.strftime('%H-%M-%S')})): {actual_price}")
         placeholder_MAE.text(f"MAE: {calculate_mae(predicted_prices_arr, actual_prices_arr)}")
         placeholder_MAPE.text(f"MAPE: {calculate_mape(predicted_prices_arr, actual_prices_arr)}")
@@ -51,10 +58,12 @@ def generate_data():
         placeholder_benchmark_running_error.text(f"Actual Running Error: {benchmark_running_error}")
         placeholder_counter.text(f"Counter: {len(predicted_prices_arr)}")
         
-        data = {'Timestamp': [datetime.now().strftime("%Y-%m-%d %H:%M:%S")], 'Predicted Price': predicted_price, 'Actual Price': actual_price}
+        # Store in dataframe and then 
+        data = {'Timestamp': [datetime.now().strftime("%Y-%m-%d %H:%M:%S")], 'Predicted Price': predicted_price, 'Actual Price': actual_price,
+                'Benchmark Running error': benchmark_running_error, 'Prediction running error': pred_running_error}
         df_to_store = df_to_store.append(data, ignore_index=True)
         
-
+        # Store copy of data every 10 secs
         if (len(df_to_store) % 10 == 0):
             clearFilesInDirectory('Testing model/Data/')
             df_to_store.to_csv(

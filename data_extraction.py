@@ -7,20 +7,19 @@ import traceback
 import asyncio
 from enum import Enum
 
-import warnings
-warnings.filterwarnings("ignore")
-
 from Utils import clearFilesInDirectory, IfExistsMoveTo
 
 Tickers = Enum('Tickers', ['BTCTUSD'])
+SYMBOL = Tickers.BTCTUSD.name
+TIME_TO_SLEEP = 10
 
 HOURS = 240
 MINS = HOURS * 60
-SYMBOL = Tickers.BTCTUSD.name
-TIME_TO_SLEEP = 10
 NUMBER_OF_ROWS_REQUIRED = int((MINS * 60)/10)
+
 client = Client(config.api_key, config.api_secret)
 
+# Separate raw data form Binance in their respective columns
 def col_separator(df):
     df_new = pd.DataFrame()
     df_new['bid_price'] = df['bids'].apply(lambda x: float(x[0]))
@@ -29,7 +28,7 @@ def col_separator(df):
     df_new['ask_volume'] = df['asks'].apply(lambda x: float(x[1]))
     return df_new
 
-
+# Get mid price
 def get_mid_price(df):
     df_new = pd.DataFrame()
     df_new['bid_price'] = df['bids'].apply(lambda x: float(x[0]))
@@ -38,7 +37,7 @@ def get_mid_price(df):
     df_new['ask_volume'] = df['asks'].apply(lambda x: float(x[1]))
     return (((df_new['bid_price'] * df_new['ask_volume']) + (df_new['ask_price'] * df_new['bid_volume'])) / (df_new['bid_volume'] + df_new['ask_volume'])).values[0]
 
-
+# Get data and preprocess it and store it
 async def main():
     print(SYMBOL)
     IfExistsMoveTo('../data/checkpoints')
