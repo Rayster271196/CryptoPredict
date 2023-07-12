@@ -10,7 +10,7 @@ This README is in line with the Thesis report submitted so please find informati
 This file is where we collect raw L2 orderbook data up to 10 levels at t secs and the Actual price is collected at t+10 secs and then stored as a row and so on we collect data and output it to a csv file.
 
 ### `config.py`
-This file stores the 'api_key' and 'api_secret' with is obtained from Binance. Also since I have used my personal keys I will not be sharing this file in the code submitted. (To run data_extraction.py these keys will have to be obtained)
+This file stores the 'api_key' and 'api_secret' with is obtained from Binance. Also since I have used my personal keys I will not be sharing this file in the code submitted. (To run data_extraction.py these keys will have to be obtained) [Binance API link](https://www.binance.com/en/my/settings/api-management)
 
 ### `Utils.py`
 This files contains common utility functions which are used through the code.
