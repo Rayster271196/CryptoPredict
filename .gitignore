@@ -1,0 +1,6 @@
+__pycache__
+.mypy_cache
+example.py
+Testing model/Data
+Testing model/Data Archive
+Testing model/*.csv
